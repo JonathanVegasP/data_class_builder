@@ -8,6 +8,7 @@ mixin BuilderTemplates {
     return '''
     part '$file.data.dart';
     
+    @data
     abstract class $name with _\$$name {
       /** Cannot declare variables in the class scope */
         
