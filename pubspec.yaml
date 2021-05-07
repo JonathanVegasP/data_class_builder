@@ -1,7 +1,7 @@
 name: data_class_builder
 description: A starting point for Dart libraries or applications.
-# version: 1.0.0
-# homepage: https://www.example.com
+version: 1.0.0
+homepage: https://vegasdevelopments.com
 
 publish_to: none
 
@@ -12,10 +12,10 @@ dependencies:
   analyzer: ^1.5.0
   build: ^2.0.1
   data_class:
-    path: ../data_class
+    git: https://github.com/JonathanVegasP/data_class.git
   source_gen: ^1.0.0
   base_exception:
-    path: ../base_exception
+    git: https://github.com/JonathanVegasP/base_exception.git
 
 dev_dependencies:
   pedantic: ^1.9.0
