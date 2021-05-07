@@ -31,10 +31,10 @@ extension ConstructorBuilder on StringBuffer {
         if (nullSafety) {
           final type = field.type;
 
-          if (BuilderUtilities.isNullable(type) && field.isOptionalNamed) {
+          if (!BuilderUtilities.isNullable(type) && field.isOptionalNamed) {
             throw DataClassException
                 .cannotDeclareNonNullableNamedParameterWithoutRequired(
-              '$type ${field.name} at $name',
+              '{required $type ${field.name}} at $name',
             );
           } else if (field.isRequiredNamed) {
             prefix = 'required ';
@@ -47,7 +47,7 @@ extension ConstructorBuilder on StringBuffer {
 
         if (nullSafety && !BuilderUtilities.isNullable(type)) {
           throw DataClassException.cannotDeclareOptionalParameterNonNullable(
-            '$type ${field.name} at $name',
+            '[$type? ${field.name}] at $name',
           );
         }
 

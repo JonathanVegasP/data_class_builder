@@ -18,10 +18,11 @@ class DataClassException extends BaseException {
 
   const DataClassException.cannotDeclareOptionalParameterNonNullable(
       String field)
-      : super('Cannot declare optional nonNullable parameters as [$field]\n');
+      : super(
+            'Cannot declare optional non nullable parameters. Declare as: $field\n');
 
   const DataClassException.cannotDeclareNonNullableNamedParameterWithoutRequired(
       String field)
       : super('Cannot declare non nullable named parameter without required '
-            'keyword. Declare as: {required $field}');
+            'keyword. Declare as: $field');
 }
