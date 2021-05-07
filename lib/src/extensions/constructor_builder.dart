@@ -28,7 +28,16 @@ extension ConstructorBuilder on StringBuffer {
 
         var prefix = '';
 
-        if (nullSafety && field.isRequiredNamed) {
+        if (nullSafety) {
+          final type = field.type;
+
+          if (!BuilderUtilities.isNullable(type) && field.isOptionalNamed) {
+            throw DataClassException
+                .cannotDeclareNonNullableNamedParameterWithoutRequired(
+              '$type ${field.name}',
+            );
+          }
+
           prefix = 'required ';
         }
 
