@@ -3,9 +3,10 @@ import 'package:analyzer/dart/element/element.dart';
 mixin BuilderTemplates {
   static String onError(ClassElement element) {
     final name = element.name;
+    final file = element.librarySource.shortName.replaceFirst('.dart', '');
 
     return '''
-    part 'file_name.data.dart';
+    part '$file.data.dart';
     
     abstract class $name with _\$$name {
       /** Cannot declare variables in the class scope */
