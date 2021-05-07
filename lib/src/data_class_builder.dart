@@ -10,8 +10,9 @@ class DataClassBuilder extends GeneratorForAnnotation<DataClass> {
 
   @override
   Future<String> generateForAnnotatedElement(
-      Element element, ConstantReader annotation, BuildStep buildStep) {
-    return BuilderUtilities.checkElement(element)
-        .then((element) => element.toDataClass());
+      Element element, ConstantReader annotation, BuildStep buildStep) async {
+    final el = await BuilderUtilities.checkElement(element);
+
+    return el.toDataClass();
   }
 }
