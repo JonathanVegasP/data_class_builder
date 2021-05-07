@@ -16,6 +16,9 @@ extension ConstructorBuilder on StringBuffer {
 
     var hasOptional = false;
 
+    final nonNullableRequired = [];
+    final nonNullableOptionals = [];
+
     for (final field in fields) {
       if (field.isRequiredPositional) {
         write('this.${field.name}, ');
@@ -32,10 +35,8 @@ extension ConstructorBuilder on StringBuffer {
           final type = field.type;
 
           if (!BuilderUtilities.isNullable(type) && field.isOptionalNamed) {
-            throw DataClassException
-                .cannotDeclareNonNullableNamedParameterWithoutRequired(
-              '{required $type ${field.name}} at $name',
-            );
+            nonNullableRequired.add('required $type ${field.name}');
+            continue;
           } else if (field.isRequiredNamed) {
             prefix = 'required ';
           }
@@ -46,9 +47,8 @@ extension ConstructorBuilder on StringBuffer {
         final type = field.type;
 
         if (nullSafety && !BuilderUtilities.isNullable(type)) {
-          throw DataClassException.cannotDeclareOptionalParameterNonNullable(
-            '[$type? ${field.name}] at $name',
-          );
+          nonNullableOptionals.add('$type? ${field.name}');
+          continue;
         }
 
         if (!hasOptional) {
@@ -59,6 +59,19 @@ extension ConstructorBuilder on StringBuffer {
 
         write('this.${field.name}, ');
       }
+    }
+
+    if (nonNullableRequired.isNotEmpty) {
+      throw DataClassException
+          .cannotDeclareNonNullableNamedParameterWithoutRequired(
+        '{${nonNullableRequired.reduce((value, element) => '$value, $element')}} at $name',
+      );
+    }
+
+    if (nonNullableOptionals.isNotEmpty) {
+      throw DataClassException.cannotDeclareOptionalParameterNonNullable(
+        '[${nonNullableOptionals.reduce((value, element) => '$value, $element')}] at $name',
+      );
     }
 
     if (hasNamed) {
