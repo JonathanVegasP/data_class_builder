@@ -60,11 +60,8 @@ extension CopyWithBuilder on StringBuffer {
 
     for (final field in fields) {
       final name = field.name;
-      if (field.isNamed) {
-        write('$name: $name == data ? this.$name : $name, ');
-      } else {
-        write('$name == data ? this.$name : $name, ');
-      }
+
+      write('$name: $name == data ? this.$name : $name, ');
     }
 
     writeln(');');
