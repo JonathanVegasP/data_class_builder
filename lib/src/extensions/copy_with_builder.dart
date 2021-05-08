@@ -30,9 +30,35 @@ extension CopyWithBuilder on StringBuffer {
     for (final field in fields) {
       final name = field.name;
       if (field.isNamed) {
-        write('$name: $name ?? this.$name, ');
+        write('$name: $name, ');
       } else {
-        write('$name ?? this.$name, ');
+        write('$name, ');
+      }
+    }
+
+    writeln(');');
+
+    writeln('}');
+  }
+
+  void writeCopyWithForClass(String name, List<ParameterElement> fields) {
+    writeln('@override');
+    write('$name copyWith({');
+
+    for (final field in fields) {
+      write('Object? ${field.name} = data, ');
+    }
+
+    writeln('}) {');
+
+    write('return $name(');
+
+    for (final field in fields) {
+      final name = field.name;
+      if (field.isNamed) {
+        write('$name: $name == data ? this.$name : $name, ');
+      } else {
+        write('$name == data ? this.$name : $name, ');
       }
     }
 

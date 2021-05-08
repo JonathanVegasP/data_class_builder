@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 
 import '../extensions/constructor_builder.dart';
+import '../extensions/copy_with_builder.dart';
 import '../extensions/from_json_builder.dart';
 import '../models/data_class_element.dart';
 
@@ -27,6 +28,10 @@ extension ClassBuilder on StringBuffer {
     writeln();
 
     writeFromJson(name, fields, nullSafety);
+
+    writeln();
+
+    writeCopyWithForClass(name, fields);
 
     writeln('}');
   }
