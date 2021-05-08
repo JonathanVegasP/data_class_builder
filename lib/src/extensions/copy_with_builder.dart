@@ -29,8 +29,13 @@ extension CopyWithBuilder on StringBuffer {
 
     for (final field in fields) {
       final name = field.name;
+
       if (field.isNamed) {
-        write('$name: $name, ');
+        if (nullSafety && !BuilderUtilities.isNullable(field.type)) {
+          write('$name: $name ?? this.$name, ');
+        } else {
+          write('$name: $name, ');
+        }
       } else {
         write('$name, ');
       }
@@ -46,12 +51,12 @@ extension CopyWithBuilder on StringBuffer {
     write('$name copyWith({');
 
     for (final field in fields) {
-      write('Object? ${field.name} = data, ');
+      write('dynamic ${field.name} = data, ');
     }
 
     writeln('}) {');
 
-    write('return $name(');
+    write('return super.copyWith(');
 
     for (final field in fields) {
       final name = field.name;
