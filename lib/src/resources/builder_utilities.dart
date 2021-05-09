@@ -107,13 +107,19 @@ mixin BuilderUtilities {
       element is ClassElement &&
       !element.librarySource.isInSystemLibrary;
 
-  static bool hasToJson(Element? element) =>
-      isClass(element) && (element as ClassElement).getMethod('toJson') != null;
+  static List<DartType> getTypeArgumentsFromList(DartType type) {
+    if (type is! InterfaceType || !type.isDartCoreList) return [];
 
-  static bool hasFromJson(Element? element) =>
-      isClass(element) &&
-      (element as ClassElement).getNamedConstructor('fromJson') != null;
+    final types = type.typeArguments
+        .expand((element) =>
+            element.isDartCoreIterable || element.isDartCoreList
+                ? [element, ...getTypeArgumentsFromList(element)]
+                : [element])
+        .toList();
+
+    return types;
+  }
 
   static bool isNullable(DartType type) =>
-      type.nullabilitySuffix == NullabilitySuffix.question;
+      type.isDynamic || type.nullabilitySuffix == NullabilitySuffix.question;
 }

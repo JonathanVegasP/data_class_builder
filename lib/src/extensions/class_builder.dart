@@ -31,7 +31,7 @@ extension ClassBuilder on StringBuffer {
 
     writeln();
 
-    writeCopyWithForClass(name, fields);
+    if (fields.isNotEmpty) writeCopyWithForClass(name, fields);
 
     writeln('}');
   }

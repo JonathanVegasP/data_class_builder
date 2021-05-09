@@ -13,32 +13,89 @@ extension FromJsonBuilder on StringBuffer {
       final name = field.name;
       final type = field.type;
       final el = type.element;
+      final types = BuilderUtilities.getTypeArgumentsFromList(type);
 
-      if (BuilderUtilities.hasFromJson(el)) {
-        var declaration = '';
+      if (BuilderUtilities.isClass(el)) {
+        if (field.isNamed) write('$name: ');
+
         if (nullSafety) {
           if (BuilderUtilities.isNullable(type)) {
-            declaration =
-                "json['$name'] != null ? ${el!.name}.fromJson(json['$name'] as Map<String,dynamic>) : null, ";
+            write(
+                "json['$name'] != null ? ${el!.name}.fromJson(json['$name'] as Map<String,dynamic>) : null, ");
           } else {
-            declaration =
-                "${el!.name}.fromJson(json['$name'] as Map<String,dynamic>), ";
+            write(
+                "${el!.name}.fromJson(json['$name'] as Map<String,dynamic>), ");
           }
         } else {
-          declaration =
-              "json['$name'] != null ? ${el!.name}.fromJson(json['$name'] as Map<String,dynamic>) : null, ";
+          write(
+              "json['$name'] != null ? ${el!.name}.fromJson(json['$name'] as Map<String,dynamic>) : null, ");
         }
+      } else if (types.isNotEmpty) {
+        if (field.isNamed) write('$name: ');
 
-        if (field.isNamed) {
-          write('$name: $declaration');
+        if (nullSafety) {
+          final isNull = BuilderUtilities.isNullable(type);
+
+          if (isNull) {
+            write("(json['$name'] as List<dynamic>?)?.map((e) => ");
+          } else {
+            write("(json['$name'] as List<dynamic>).map((e) => ");
+          }
+
+          for (final type in types) {
+            final el = type.element;
+            if (BuilderUtilities.isClass(el)) {
+              if (BuilderUtilities.isNullable(type)) {
+                write(
+                    'e != null ? ${el!.name}.fromJson(e as Map<String,dynamic>) : null');
+              } else {
+                write('${el!.name}.fromJson(e as Map<String,dynamic>)');
+              }
+            } else {
+              if (BuilderUtilities.isNullable(type)) {
+                write('(e as List<dynamic>?)?.map((e) => ');
+              } else {
+                write('(e as List<dynamic>).map((e) => ');
+              }
+            }
+          }
+
+          for (final _ in types) {
+            write(').toList()');
+          }
+
+          if (isNull) {
+            write(', ');
+          } else {
+            write(', ');
+          }
         } else {
-          write(declaration);
+          write("(json['$name'] as List<dynamic>)?.map((e) => ");
+
+          for (final type in types) {
+            final el = type.element;
+
+            if (BuilderUtilities.isClass(el)) {
+              write(
+                  'e != null ? ${el!.name}.fromJson(e as Map<String,dynamic>) : null');
+            } else {
+              write('(e as List<dynamic>)?.map((e) => ');
+            }
+          }
+
+          for (final _ in types) {
+            write(')?.toList()');
+          }
+
+          write(', ');
         }
       } else {
         if (field.isNamed) {
-          write("$name: json['$name'] as ${field.type.getDisplayString(withNullability: nullSafety)}, ");
+          write(
+              "$name: json['$name'] as ${type.getDisplayString(withNullability: nullSafety)}, ");
         } else {
-          write("json['$name'] as ${field.type.getDisplayString(withNullability: nullSafety)}, ");
+          write(
+              "json['$name'] as ${type.getDisplayString(withNullability: nullSafety)}, ");
         }
       }
     }
