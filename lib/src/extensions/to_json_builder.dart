@@ -24,7 +24,8 @@ extension ToJsonBuilder on StringBuffer {
         } else {
           write("'$name': $name?.toJson(), ");
         }
-      } else if (types.isNotEmpty) {
+      } else if (types.isNotEmpty &&
+          BuilderUtilities.isClass(types.last.element)) {
         write("'$name': $name");
         if (nullSafety) {
           final isNull = BuilderUtilities.isNullable(type);

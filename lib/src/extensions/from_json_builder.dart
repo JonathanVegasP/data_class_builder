@@ -30,7 +30,7 @@ extension FromJsonBuilder on StringBuffer {
           write(
               "json['$name'] != null ? ${el!.name}.fromJson(json['$name'] as Map<String,dynamic>) : null, ");
         }
-      } else if (types.isNotEmpty) {
+      } else if (types.isNotEmpty && BuilderUtilities.isClass(types.last.element)) {
         if (field.isNamed) write('$name: ');
 
         if (nullSafety) {
