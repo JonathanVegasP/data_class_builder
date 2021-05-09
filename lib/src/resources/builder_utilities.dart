@@ -111,10 +111,9 @@ mixin BuilderUtilities {
     if (type is! InterfaceType || !type.isDartCoreList) return [];
 
     final types = type.typeArguments
-        .expand((element) =>
-            element.isDartCoreIterable || element.isDartCoreList
-                ? [element, ...getTypeArgumentsFromList(element)]
-                : [element])
+        .expand((element) => element.isDartCoreList
+            ? [element, ...getTypeArgumentsFromList(element)]
+            : [element])
         .toList();
 
     return types;
