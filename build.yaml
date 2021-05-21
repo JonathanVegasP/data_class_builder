@@ -1,7 +1,7 @@
 builders:
-  data_class_builder:
-    import: "package:data_class_builder/builder.dart"
-    builder_factories: ["dataClassBuilder"]
-    build_extensions: {".dart": [".data.part"]}
+  data_builder:
+    import: "package:data_builder/data_builder.dart"
+    builder_factories: [ "dataClassBuilder" ]
+    build_extensions: { ".dart": [ ".data.part" ] }
     auto_apply: dependents
     build_to: source
