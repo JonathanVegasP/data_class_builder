@@ -55,3 +55,14 @@ extension ParameterElementExtension on ParameterElement {
       ?.getField('key')
       ?.toStringValue();
 }
+
+extension FieldElementExtension on FieldElement {
+  String? get jsonKey => metadata
+      .map((element) => element.computeConstantValue())
+      .firstWhere(
+        (element) => element?.type?.element?.name == 'DataKey',
+        orElse: () => null,
+      )
+      ?.getField('key')
+      ?.toStringValue();
+}

@@ -1,24 +1,24 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_helper/source_helper.dart';
 
-import '../models/data_class_element.dart';
+import '../models/data_element.dart';
 import 'type_builder.dart';
 
 class UriTypeBuilder implements TypeBuilder {
   @override
-  String declaration({required DataClassElement element}) {
+  String declaration({required DataElement element}) {
     // TODO: implement declaration
     throw UnimplementedError();
   }
 
   @override
-  String fromJson({required DataClassElement element}) {
+  String fromJson({required DataElement element}) {
     // TODO: implement fromJson
     throw UnimplementedError();
   }
 
   @override
-  String toJson({required DataClassElement element, DartType? type}) {
+  String toJson({required DataElement element, DartType? type}) {
     final buffer = StringBuffer();
     final name = element.name;
     final nullSafety = element.nullSafety;

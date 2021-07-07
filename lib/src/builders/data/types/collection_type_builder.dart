@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_helper/source_helper.dart';
 
-import '../extensions/dart_type_extensions.dart';
-import '../models/data_class_element.dart';
+import '../../../extensions/dart_type_extensions.dart';
+import '../models/data_element.dart';
 import 'big_int_type_builder.dart';
 import 'class_type_builder.dart';
 import 'date_time_type_builder.dart';
@@ -14,14 +14,14 @@ import 'uri_type_builder.dart';
 
 class CollectionTypeBuilder implements TypeBuilder {
   @override
-  String declaration({required DataClassElement element}) {
+  String declaration({required DataElement element}) {
     // TODO: implement declaration
     throw UnimplementedError();
   }
 
   @override
   String fromJson({
-    required DataClassElement element,
+    required DataElement element,
     DartType? type,
     List<DartType>? collectionTypes,
   }) {
@@ -55,7 +55,7 @@ class CollectionTypeBuilder implements TypeBuilder {
 
       final newType = collectionTypes![0];
       final newCollectionTypes = collectionTypes.sublist(1);
-      final newElement = DataClassElement(
+      final newElement = DataElement(
         name: args,
         nullSafety: nullSafety,
         isConst: isConst,
@@ -86,7 +86,7 @@ class CollectionTypeBuilder implements TypeBuilder {
       }
 
       final newCollectionTypes = collectionTypes.sublist(2);
-      final newElement = DataClassElement(
+      final newElement = DataElement(
         name: args,
         nullSafety: nullSafety,
         isConst: isConst,
@@ -115,7 +115,7 @@ class CollectionTypeBuilder implements TypeBuilder {
 
   @override
   String toJson({
-    required DataClassElement element,
+    required DataElement element,
     DartType? type,
     List<DartType>? collectionTypes,
   }) {
@@ -155,7 +155,7 @@ class CollectionTypeBuilder implements TypeBuilder {
 
       final newType = collectionTypes![0];
       final newCollectionTypes = collectionTypes.sublist(1);
-      final newElement = DataClassElement(
+      final newElement = DataElement(
         name: args,
         nullSafety: nullSafety,
         isConst: isConst,
@@ -182,7 +182,7 @@ class CollectionTypeBuilder implements TypeBuilder {
 
       final newType = collectionTypes[1];
       final newCollectionTypes = collectionTypes.sublist(2);
-      final newElement = DataClassElement(
+      final newElement = DataElement(
         name: args,
         nullSafety: nullSafety,
         isConst: isConst,

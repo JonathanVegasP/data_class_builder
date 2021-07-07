@@ -1,29 +1,32 @@
 import 'package:analyzer/dart/analysis/results.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 
 import '../types/class_type_builder.dart';
 import '../types/mixin_type_builder.dart';
 
-class DataClassElement {
+class DataElement {
   final String name;
   final bool nullSafety;
   final bool isConst;
   final List<ParameterElement> fields;
+  final DartType? entity;
   final _mixin = MixinTypeBuilder();
   final _class = ClassTypeBuilder();
 
-  DataClassElement({
+  DataElement({
     required this.name,
     required this.nullSafety,
     required this.isConst,
     required this.fields,
+    this.entity,
   });
 
-  static DataClassElement fromElement(Element element) {
+  factory DataElement.fromElement(Element element) {
     final name = element.name!;
 
     if (element is! ClassElement || !element.isAbstract) {
-      throw '$name must be an abstract class';
+      throw 'DataBuilder: $name must be an abstract class';
     }
 
     final elementDeclaration = (element.session!
@@ -33,7 +36,7 @@ class DataClassElement {
         .toSource();
 
     final regex =
-        RegExp(r'abstract class [' '$name' r']+ with _\$[' '$name' r']+ {');
+        RegExp(r'abstract class (' '$name' r')+ with _\$(' '$name' r')+ {');
 
     if (!regex.hasMatch(elementDeclaration)) {
       throw '$name must be declared as: abstract class $name with _\$$name {';
@@ -65,7 +68,7 @@ class DataClassElement {
             .toSource()
             .split('=');
 
-    final constructorRegex = RegExp(r'^ _[' '$name' r']+;$');
+    final constructorRegex = RegExp(r'^ _(' '$name' r')+;$');
 
     if (!constructorRegex.hasMatch(constructorDeclaration.last)) {
       throw 'Must declare a factory constructor as const factory/factory $name(/** Fields...*/) = _$name;';
@@ -111,11 +114,18 @@ class DataClassElement {
       throw 'The method toJson must be declared as: Map<String, dynamic> toJson();';
     }
 
-    return DataClassElement(
+    final entity = element.metadata
+        .map((e) => e.computeConstantValue())
+        .firstWhere((element) => element!.type!.element!.name == 'DataClass')!
+        .getField('entity')!
+        .toTypeValue();
+
+    return DataElement(
       name: name,
       fields: constructor.parameters,
       isConst: constructor.isConst,
       nullSafety: nullSafety,
+      entity: entity,
     );
   }
 

@@ -1,12 +1,12 @@
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_helper/source_helper.dart';
 
-import '../models/data_class_element.dart';
+import '../models/data_element.dart';
 import 'type_builder.dart';
 
 class ParseTypeBuilder implements TypeBuilder {
   @override
-  String declaration({required DataClassElement element, DartType? type}) {
+  String declaration({required DataElement element, DartType? type}) {
     final buffer = StringBuffer();
     final variable = element.name;
     final variableDeclaration = variable.contains('.') | variable.contains('[')
@@ -29,13 +29,13 @@ class ParseTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String fromJson({required DataClassElement element}) {
+  String fromJson({required DataElement element}) {
     // TODO: implement fromJson
     throw UnimplementedError();
   }
 
   @override
-  String toJson({required DataClassElement element}) {
+  String toJson({required DataElement element}) {
     // TODO: implement toJson
     throw UnimplementedError();
   }

@@ -1,7 +1,7 @@
 import 'package:source_helper/source_helper.dart';
 
-import '../extensions/dart_type_extensions.dart';
-import '../models/data_class_element.dart';
+import '../../../extensions/dart_type_extensions.dart';
+import '../models/data_element.dart';
 import 'big_int_type_builder.dart';
 import 'class_type_builder.dart';
 import 'collection_type_builder.dart';
@@ -14,7 +14,7 @@ import 'uri_type_builder.dart';
 
 class ClassConstructorTypeBuilder implements TypeBuilder {
   @override
-  String declaration({required DataClassElement element}) {
+  String declaration({required DataElement element}) {
     final buffer = StringBuffer();
     final name = '_${element.name}';
     final fields = element.fields;
@@ -62,7 +62,7 @@ class ClassConstructorTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String fromJson({required DataClassElement element}) {
+  String fromJson({required DataElement element}) {
     final buffer = StringBuffer();
     final name = element.name;
     final fields = element.fields;
@@ -84,7 +84,7 @@ class ClassConstructorTypeBuilder implements TypeBuilder {
           type.getDisplayString(withNullability: nullSafety);
       final variable = "json['${field.jsonKey ?? name}']";
       final collectionTypes = type.collectionTypes;
-      final element = DataClassElement(
+      final element = DataElement(
         name: variable,
         nullSafety: nullSafety,
         isConst: isConst,
@@ -123,7 +123,7 @@ class ClassConstructorTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String toJson({required DataClassElement element}) {
+  String toJson({required DataElement element}) {
     final buffer = StringBuffer();
     final fields = element.fields;
     final nullSafety = element.nullSafety;
@@ -144,7 +144,7 @@ class ClassConstructorTypeBuilder implements TypeBuilder {
       final name = field.name;
       final type = field.type;
       final collectionTypes = type.collectionTypes;
-      final element = DataClassElement(
+      final element = DataElement(
         name: name,
         nullSafety: nullSafety,
         isConst: isConst,

@@ -1,7 +1,8 @@
 import 'package:analyzer/dart/element/type.dart';
+import 'from_entity_type_builder.dart';
 import 'package:source_helper/source_helper.dart';
 
-import '../models/data_class_element.dart';
+import '../models/data_element.dart';
 import 'class_constructor_type_builder.dart';
 import 'class_fields_type_builder.dart';
 import 'copy_with_type_builder.dart';
@@ -9,18 +10,24 @@ import 'type_builder.dart';
 
 class ClassTypeBuilder implements TypeBuilder {
   @override
-  String declaration({required DataClassElement element}) {
+  String declaration({required DataElement element}) {
     final buffer = StringBuffer();
     final name = element.name;
     final fields = ClassFieldsTypeBuilder();
     final constructor = ClassConstructorTypeBuilder();
     final copyWith = CopyWithTypeBuilder();
+    final entity = FromEntityTypeBuilder();
 
     buffer.writeln('class _$name extends $name {');
     buffer.writeln(fields.declaration(element: element));
     buffer.writeln(constructor.declaration(element: element));
     buffer.writeln(constructor.fromJson(element: element));
     buffer.writeln(copyWith.declaration(element: element, isClass: true));
+
+    if (element.entity != null) {
+      buffer.writeln(entity.declaration(element: element));
+    }
+
     buffer.write(constructor.toJson(element: element));
     buffer.writeln('}');
 
@@ -28,7 +35,7 @@ class ClassTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String fromJson({required DataClassElement element, DartType? type}) {
+  String fromJson({required DataElement element, DartType? type}) {
     final buffer = StringBuffer();
     final nullSafety = element.nullSafety;
     final name = type!.element!.name;
@@ -49,7 +56,7 @@ class ClassTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String toJson({required DataClassElement element, DartType? type}) {
+  String toJson({required DataElement element, DartType? type}) {
     final buffer = StringBuffer();
     final name = element.name;
     final nullSafety = element.nullSafety;
