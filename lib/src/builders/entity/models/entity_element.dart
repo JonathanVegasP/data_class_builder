@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+
 import '../type_builders/mixin_type_builder.dart';
 
 class EntityElement {
@@ -20,11 +21,13 @@ class EntityElement {
       throw 'EntityBuilder: $name must has declarated field(s)';
     }
 
-    if (element.unnamedConstructor == null) {
+    final constructor = element.unnamedConstructor;
+
+    if (constructor == null) {
       throw 'EntityBuilder: $name must has an unnamed constructor';
     }
 
-    final parameterFields = element.unnamedConstructor!.parameters;
+    final parameterFields = constructor.parameters;
 
     return EntityElement(
       name: name,

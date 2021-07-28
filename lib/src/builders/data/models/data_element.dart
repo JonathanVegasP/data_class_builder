@@ -100,7 +100,7 @@ class DataElement {
         fromJson.parameters.last.type
                 .getDisplayString(withNullability: nullSafety) !=
             'Map<String, dynamic>') {
-      throw 'The method toJson must has only a parameter type as: Map<String, dynamic>';
+      throw 'The constructor fromJson must has only a parameter typed as Map<String, dynamic>';
     }
 
     final toJson = element.getMethod('toJson');
@@ -119,6 +119,34 @@ class DataElement {
         .firstWhere((element) => element!.type!.element!.name == 'DataClass')!
         .getField('entity')!
         .toTypeValue();
+
+    if (entity != null) {
+      final fromEntity = element.getNamedConstructor('fromEntity');
+
+      final type = entity.getDisplayString(withNullability: false);
+
+      if (fromEntity == null) {
+        throw 'Must be declared a non constant factory fromEntity as $name.fromEntity($type entity) = _$name.fromEntity;';
+      }
+
+      if (fromEntity.parameters.length != 1 ||
+          fromEntity.parameters.last.type
+                  .getDisplayString(withNullability: nullSafety) !=
+              type) {
+        throw 'The constructor fromEntity must has only a parameter typed as $type';
+      }
+
+      final toEntity = element.getMethod('toEntity');
+
+      if (toEntity == null ||
+          toEntity.returnType.getDisplayString(withNullability: nullSafety) !=
+              type ||
+          toEntity.parameters.isNotEmpty ||
+          toEntity.typeParameters.isNotEmpty ||
+          !toEntity.isAbstract) {
+        throw 'The method toEntity must be declared as: $type toEntity();';
+      }
+    }
 
     return DataElement(
       name: name,
