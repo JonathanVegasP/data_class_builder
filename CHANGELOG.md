@@ -1,3 +1,6 @@
+## 1.1.2
+- Fixed null safety when building entity feature
+
 ## 1.1.1
 - Fixed the entity feature from data builder
 
