@@ -25,6 +25,13 @@ extension DartTypeExt on DartType {
   bool get hasToJson =>
       isClass && (element as ClassElement).getMethod('toJson') != null;
 
+  bool get hasFromEntity =>
+      isClass &&
+      (element as ClassElement).getNamedConstructor('fromEntity') != null;
+
+  bool get hasToEntity =>
+      isClass && (element as ClassElement).getMethod('toEntity') != null;
+
   bool get isDateTime => _dateTimeChecker.isExactlyType(this);
 
   bool get isBigInt => _bigIntChecker.isExactlyType(this);

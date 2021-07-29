@@ -1,7 +1,11 @@
 import 'package:analyzer/dart/element/element.dart';
-import '../models/data_element.dart';
-import 'type_builder.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:source_helper/source_helper.dart';
+
 import '../../../extensions/dart_type_extensions.dart';
+import '../models/data_element.dart';
+import 'collection_type_builder.dart';
+import 'type_builder.dart';
 
 class ToEntityTypeBuilder implements TypeBuilder {
   @override
@@ -20,6 +24,7 @@ class ToEntityTypeBuilder implements TypeBuilder {
     final fields = entity.unnamedConstructor!.parameters;
     final elementFields = element.fields;
     final buffer = StringBuffer();
+    final collectionTypeBuilder = CollectionTypeBuilder();
 
     buffer.writeln('$entityType toEntity() {');
 
@@ -44,7 +49,21 @@ class ToEntityTypeBuilder implements TypeBuilder {
           buffer.write('$name: ');
         }
 
-        buffer.write('$name,');
+        final type = field.type;
+
+        final collectionTypes = type.collectionTypes;
+
+        if (collectionTypes.isNotEmpty & collectionTypes.last.hasToEntity) {
+          buffer.write(collectionTypeBuilder.toJson(
+            element: element,
+            collectionTypes: collectionTypes,
+            type: type,
+          ));
+        } else if (type.hasToEntity) {
+          buffer.write('$name.toEntity(),');
+        } else {
+          buffer.write('$name,');
+        }
 
         break;
       }
@@ -60,14 +79,40 @@ class ToEntityTypeBuilder implements TypeBuilder {
   }
 
   @override
-  String fromJson({required DataElement element}) {
-    // TODO: implement fromJson
-    throw UnimplementedError();
+  String fromJson({required DataElement element, DartType? type}) {
+    final buffer = StringBuffer();
+    final nullSafety = element.nullSafety;
+    final name = type!.element!.name;
+    final variable = element.name;
+    final typeDeclaration = type.getDisplayString(withNullability: nullSafety);
+
+    if (type.isNullableType) {
+      buffer.write(
+          '$variable != null ? $name.fromEntity($variable as $typeDeclaration) : null, ');
+    } else if (nullSafety) {
+      buffer.write('$name.fromEntity($variable as $typeDeclaration), ');
+    } else {
+      buffer.write(
+          '$variable != null ? $name.fromEntity($variable as $typeDeclaration) : null, ');
+    }
+
+    return buffer.toString();
   }
 
   @override
-  String toJson({required DataElement element}) {
-    // TODO: implement toJson
-    throw UnimplementedError();
+  String toJson({required DataElement element, DartType? type}) {
+    final buffer = StringBuffer();
+    final name = element.name;
+    final nullSafety = element.nullSafety;
+
+    if (type!.isNullableType) {
+      buffer.write('$name?.toEntity(), ');
+    } else if (nullSafety) {
+      buffer.write('$name.toEntity(), ');
+    } else {
+      buffer.write('$name?.toEntity(), ');
+    }
+
+    return buffer.toString();
   }
 }

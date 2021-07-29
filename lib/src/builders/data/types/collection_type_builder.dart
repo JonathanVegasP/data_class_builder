@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
+import 'package:data_builder/src/builders/data/types/to_entity_type_builder.dart';
 import 'package:source_helper/source_helper.dart';
 
 import '../../../extensions/dart_type_extensions.dart';
@@ -35,9 +36,12 @@ class CollectionTypeBuilder implements TypeBuilder {
     final _enum = EnumTypeBuilder();
     final parseType = ParseTypeBuilder();
     final durationType = DurationTypeBuilder();
+    final entityType = ToEntityTypeBuilder();
 
     if (type!.hasFromJson) {
       buffer.write(_class.fromJson(element: element, type: type));
+    } else if(type.hasFromEntity) {
+      buffer.write(entityType.fromJson(element: element, type: type));
     } else if (type.isEnum) {
       buffer.write(_enum.fromJson(element: element, type: type));
     } else if (type.isParseType) {
@@ -131,9 +135,12 @@ class CollectionTypeBuilder implements TypeBuilder {
     final bigIntType = BigIntTypeBuilder();
     final dateTimeType = DateTimeTypeBuilder();
     final durationType = DurationTypeBuilder();
+    final entityType = ToEntityTypeBuilder();
 
-    if (type!.isClass) {
+    if (type!.hasToJson) {
       buffer.write(_class.toJson(element: element, type: type));
+    } else if (type.hasToEntity) {
+      buffer.write(entityType.toJson(element: element, type: type));
     } else if (type.isEnum) {
       buffer.write(_enum.toJson(element: element, type: type));
     } else if (type.isUri) {
