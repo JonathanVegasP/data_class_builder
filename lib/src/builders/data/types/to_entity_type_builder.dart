@@ -70,7 +70,13 @@ class ToEntityTypeBuilder implements TypeBuilder {
             toEntity: true,
           ));
         } else if (type.hasToEntity) {
-          buffer.write('$name.toEntity(),');
+          if (type.isNullableType) {
+            buffer.write('$name?.toEntity(), ');
+          } else if (element.nullSafety) {
+            buffer.write('$name.toEntity(), ');
+          } else {
+            buffer.write('$name?.toEntity(), ');
+          }
         } else {
           buffer.write('$name,');
         }
@@ -96,13 +102,11 @@ class ToEntityTypeBuilder implements TypeBuilder {
     final variable = element.name;
 
     if (type.isNullableType) {
-      buffer.write(
-          '$variable != null ? $name.fromEntity($variable) : null, ');
+      buffer.write('$variable != null ? $name.fromEntity($variable) : null, ');
     } else if (nullSafety) {
       buffer.write('$name.fromEntity($variable), ');
     } else {
-      buffer.write(
-          '$variable != null ? $name.fromEntity($variable) : null, ');
+      buffer.write('$variable != null ? $name.fromEntity($variable) : null, ');
     }
 
     return buffer.toString();
