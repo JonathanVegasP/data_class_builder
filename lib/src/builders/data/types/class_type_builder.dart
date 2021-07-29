@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'package:data_builder/src/builders/data/types/to_entity_type_builder.dart';
 import 'package:source_helper/source_helper.dart';
 
 import '../models/data_element.dart';
@@ -7,6 +6,7 @@ import 'class_constructor_type_builder.dart';
 import 'class_fields_type_builder.dart';
 import 'copy_with_type_builder.dart';
 import 'from_entity_type_builder.dart';
+import 'to_entity_type_builder.dart';
 import 'type_builder.dart';
 
 class ClassTypeBuilder implements TypeBuilder {
