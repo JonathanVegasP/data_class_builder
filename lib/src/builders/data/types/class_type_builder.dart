@@ -1,11 +1,12 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'from_entity_type_builder.dart';
+import 'package:data_builder/src/builders/data/types/to_entity_type_builder.dart';
 import 'package:source_helper/source_helper.dart';
 
 import '../models/data_element.dart';
 import 'class_constructor_type_builder.dart';
 import 'class_fields_type_builder.dart';
 import 'copy_with_type_builder.dart';
+import 'from_entity_type_builder.dart';
 import 'type_builder.dart';
 
 class ClassTypeBuilder implements TypeBuilder {
@@ -17,6 +18,7 @@ class ClassTypeBuilder implements TypeBuilder {
     final constructor = ClassConstructorTypeBuilder();
     final copyWith = CopyWithTypeBuilder();
     final entity = FromEntityTypeBuilder();
+    final toEntity = ToEntityTypeBuilder();
 
     buffer.writeln('class _$name extends $name {');
     buffer.writeln(fields.declaration(element: element));
@@ -26,6 +28,7 @@ class ClassTypeBuilder implements TypeBuilder {
 
     if (element.entity != null) {
       buffer.writeln(entity.declaration(element: element));
+      buffer.writeln(toEntity.declaration(element: element));
     }
 
     buffer.write(constructor.toJson(element: element));

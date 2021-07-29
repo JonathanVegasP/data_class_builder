@@ -26,6 +26,7 @@ class ToEntityTypeBuilder implements TypeBuilder {
     final buffer = StringBuffer();
     final collectionTypeBuilder = CollectionTypeBuilder();
 
+    buffer.writeln('@override');
     buffer.writeln('$entityType toEntity() {');
 
     buffer.writeln('return $entityType(');
@@ -49,15 +50,24 @@ class ToEntityTypeBuilder implements TypeBuilder {
           buffer.write('$name: ');
         }
 
-        final type = field.type;
+        final type = elementField.type;
 
         final collectionTypes = type.collectionTypes;
 
-        if (collectionTypes.isNotEmpty & collectionTypes.last.hasToEntity) {
+        final newElement = DataElement(
+          name: name,
+          nullSafety: element.nullSafety,
+          isConst: element.isConst,
+          fields: element.fields,
+          entity: element.entity,
+        );
+
+        if (collectionTypes.isNotEmpty && collectionTypes.last.hasToEntity) {
           buffer.write(collectionTypeBuilder.toJson(
-            element: element,
+            element: newElement,
             collectionTypes: collectionTypes,
             type: type,
+            toEntity: true,
           ));
         } else if (type.hasToEntity) {
           buffer.write('$name.toEntity(),');
@@ -84,16 +94,15 @@ class ToEntityTypeBuilder implements TypeBuilder {
     final nullSafety = element.nullSafety;
     final name = type!.element!.name;
     final variable = element.name;
-    final typeDeclaration = type.getDisplayString(withNullability: nullSafety);
 
     if (type.isNullableType) {
       buffer.write(
-          '$variable != null ? $name.fromEntity($variable as $typeDeclaration) : null, ');
+          '$variable != null ? $name.fromEntity($variable) : null, ');
     } else if (nullSafety) {
-      buffer.write('$name.fromEntity($variable as $typeDeclaration), ');
+      buffer.write('$name.fromEntity($variable), ');
     } else {
       buffer.write(
-          '$variable != null ? $name.fromEntity($variable as $typeDeclaration) : null, ');
+          '$variable != null ? $name.fromEntity($variable) : null, ');
     }
 
     return buffer.toString();

@@ -25,6 +25,7 @@ class CollectionTypeBuilder implements TypeBuilder {
     required DataElement element,
     DartType? type,
     List<DartType>? collectionTypes,
+    bool fromEntity = false,
   }) {
     final buffer = StringBuffer();
     final variable = element.name;
@@ -38,10 +39,10 @@ class CollectionTypeBuilder implements TypeBuilder {
     final durationType = DurationTypeBuilder();
     final entityType = ToEntityTypeBuilder();
 
-    if (type!.hasFromJson) {
-      buffer.write(_class.fromJson(element: element, type: type));
-    } else if(type.hasFromEntity) {
+    if (fromEntity && !type!.element!.source!.isInSystemLibrary) {
       buffer.write(entityType.fromJson(element: element, type: type));
+    } else if (type!.hasFromJson) {
+      buffer.write(_class.fromJson(element: element, type: type));
     } else if (type.isEnum) {
       buffer.write(_enum.fromJson(element: element, type: type));
     } else if (type.isParseType) {
@@ -50,11 +51,11 @@ class CollectionTypeBuilder implements TypeBuilder {
       buffer.write(durationType.fromJson(element: element, type: type));
     } else if (type.isDartCoreList) {
       if (type.isNullableType) {
-        buffer.write('($variable as List<dynamic>?)?.map(($args) => ');
+        buffer.write('$variable?.map(($args) => ');
       } else if (nullSafety) {
-        buffer.write('($variable as List<dynamic>).map(($args) => ');
+        buffer.write('$variable.map(($args) => ');
       } else {
-        buffer.write('($variable as List<dynamic>)?.map(($args) => ');
+        buffer.write('$variable?.map(($args) => ');
       }
 
       final newType = collectionTypes![0];
@@ -70,17 +71,15 @@ class CollectionTypeBuilder implements TypeBuilder {
         element: newElement,
         type: newType,
         collectionTypes: newCollectionTypes,
+        fromEntity: fromEntity,
       ));
     } else if (type.isDartCoreMap) {
       if (type.isNullableType) {
-        buffer.write(
-            '($variable as Map<String, dynamic>?)?.map((k, $args) => MapEntry(k, ');
+        buffer.write('$variable?.map((k, $args) => MapEntry(k, ');
       } else if (nullSafety) {
-        buffer.write(
-            '($variable as Map<String, dynamic>).map((k, $args) => MapEntry(k, ');
+        buffer.write('$variable.map((k, $args) => MapEntry(k, ');
       } else {
-        buffer.write(
-            '($variable as Map<String, dynamic>)?.map((k, $args) => MapEntry(k, ');
+        buffer.write('$variable?.map((k, $args) => MapEntry(k, ');
       }
 
       final newType = collectionTypes![1];
@@ -101,6 +100,7 @@ class CollectionTypeBuilder implements TypeBuilder {
         element: newElement,
         type: newType,
         collectionTypes: newCollectionTypes,
+        fromEntity: fromEntity,
       ));
     }
 
@@ -122,6 +122,7 @@ class CollectionTypeBuilder implements TypeBuilder {
     required DataElement element,
     DartType? type,
     List<DartType>? collectionTypes,
+    bool toEntity = false,
   }) {
     final buffer = StringBuffer();
     final name = element.name;
@@ -137,10 +138,10 @@ class CollectionTypeBuilder implements TypeBuilder {
     final durationType = DurationTypeBuilder();
     final entityType = ToEntityTypeBuilder();
 
-    if (type!.hasToJson) {
-      buffer.write(_class.toJson(element: element, type: type));
-    } else if (type.hasToEntity) {
+    if (toEntity && !type!.element!.source!.isInSystemLibrary) {
       buffer.write(entityType.toJson(element: element, type: type));
+    } else if (type!.hasToJson) {
+      buffer.write(_class.toJson(element: element, type: type));
     } else if (type.isEnum) {
       buffer.write(_enum.toJson(element: element, type: type));
     } else if (type.isUri) {
@@ -173,6 +174,7 @@ class CollectionTypeBuilder implements TypeBuilder {
         element: newElement,
         type: newType,
         collectionTypes: newCollectionTypes,
+        toEntity: toEntity,
       ));
     } else if (type.isDartCoreMap) {
       if (type.isNullableType) {
@@ -200,6 +202,7 @@ class CollectionTypeBuilder implements TypeBuilder {
         element: newElement,
         type: newType,
         collectionTypes: newCollectionTypes,
+        toEntity: toEntity,
       ));
     }
 

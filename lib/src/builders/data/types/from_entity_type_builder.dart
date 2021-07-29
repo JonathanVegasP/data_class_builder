@@ -1,7 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:data_builder/src/builders/data/types/collection_type_builder.dart';
+
+import '../../../extensions/dart_type_extensions.dart';
 import '../models/data_element.dart';
 import 'type_builder.dart';
-import '../../../extensions/dart_type_extensions.dart';
 
 class FromEntityTypeBuilder implements TypeBuilder {
   @override
@@ -20,6 +22,7 @@ class FromEntityTypeBuilder implements TypeBuilder {
     final fields = entity.unnamedConstructor!.parameters;
     final elementFields = element.fields;
     final buffer = StringBuffer();
+    final collectionType = CollectionTypeBuilder();
     final name = element.name;
 
     buffer.writeln('factory _$name.fromEntity($entityType entity) {');
@@ -36,7 +39,30 @@ class FromEntityTypeBuilder implements TypeBuilder {
           buffer.write('$name: ');
         }
 
-        buffer.write('entity.$name,');
+        final type = elementField.type;
+
+        final collectionTypes = type.collectionTypes;
+
+        if (collectionTypes.isNotEmpty && collectionTypes.last.hasFromEntity) {
+          final newElement = DataElement(
+            name: 'entity.$name',
+            nullSafety: element.nullSafety,
+            isConst: element.isConst,
+            fields: element.fields,
+          );
+
+          buffer.write(collectionType.fromJson(
+            element: newElement,
+            type: type,
+            collectionTypes: collectionTypes,
+            fromEntity: true,
+          ));
+        } else if (type.hasFromEntity) {
+          buffer.write(
+              '${type.getDisplayString(withNullability: element.nullSafety)}.fromEntity(entity.$name),');
+        } else {
+          buffer.write('entity.$name,');
+        }
       }
     }
 
