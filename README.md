@@ -88,4 +88,4 @@ abstract class ExampleDataClass with _$ExampleDataClass {
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: http://example.com/issues/replaceme
+[tracker]: https://github.com/JonathanVegasP/data_class_builder/issues
